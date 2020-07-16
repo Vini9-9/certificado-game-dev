@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="LRNLCq4Lk_data/p5.js"></script>
+    <script src="LRNLCq4Lk_data/p5_002.js"></script>
+    
+    <meta charset="utf-8">
+
+  <!-- base href="https://editor.p5js.org/Suiciniv99/embed/LRNLCq4Lk/" --><style>
+html, body {
+  margin: 0;
+  padding: 0;
+}
+canvas {
+  display: block;
+}
+</style></head>
+  <body>
+    <script>function preload() {
+  imagemCenario = loadImage('https://media.giphy.com/media/FlodpfQUBSp20/giphy.gif');
+  imagemPersonagem = loadImage('https://assets.editor.p5js.org/5ef2b10b067aaf0023125eda/474a0ad4-4511-46b4-b3ff-8cebced6635f.png');
+}
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  cenario = new Cenario(imagemCenario, 1);
+  personagem = new Personagem(imagemPersonagem, 0.01, 0, height / 2, 0.1, 10);
+}
+
+function draw() {
+  cenario.exibe();
+  cenario.move();
+  personagem.exibe();
+}</script>
+    <script>class Cenario {
+  constructor(imagem, velocidade){
+  this.imagem = imagem;
+  this.velocidade = velocidade;
+  this.x1 = 0;
+  this.x2 = width;
+  }
+
+  exibe() {
+  image(this.imagem, this.x1 , 0 , width, height);
+  image(this.imagem, this.x2 +1 , 0 , width , height);
+  
+  }
+  
+  move(){
+  this.x1=this.x1-this.velocidade;
+  this.x2=this.x2-this.velocidade;
+  
+    
+    //quando o x1 ou o x2 estiver totalmente fora
+  if(this.x1 < -width){
+   this.x1 = width
+  }
+  if(this.x2 < -width){
+   this.x2 = width
+  }
+  }
+  
+
+}</script>
+    <script>class animacao {
+  constructor(imagem, velocidade, x, y, proporcao, variacao) {
+
+    this.imagem = imagem;
+    this.proporcaoPersonagem = proporcao;
+    this.hPersonagem = imagem.height * this.proporcaoPersonagem;
+    this.wPersonagem = imagem.width * this.proporcaoPersonagem;
+    this.variacao = variacao;
+    this.hMax=this.variacao;
+    //340.5 --> meio
+    this.hMeio = (height / 2) - this.hPersonagem/2;
+    // console.log(this.hMeio)
+      if (y == height / 2) {
+        y = this.hMeio
+      }
+    
+    this.x = x;
+    this.y = y+this.variacao;
+    
+    this.atingiuMaximo = true;
+    this.atingiuMinimo = false;
+    
+    this.velocidadeFlutua = 0.5;
+    
+  }
+
+  exibe() {
+  // console.log(this.y - this.variacao)
+    //parseInt(random(0, height)))
+    // console.log(width + this.wPersonagem)
+    // this.x > width + this.wPersonagem
+    if (this.x === width){
+    this.y = personagem.y
+    }
+    
+    
+    image(this.imagem, this.x, this.y - this.variacao, this.wPersonagem, this.hPersonagem)
+    
+        // image(this.imagem, this.x, height - this.variacao - this.hPersonagem, this.wPersonagem, this.hPersonagem)
+
+    this.flutua(this.velocidadeFlutua);
+
+
+  }
+
+  anima() {
+
+  }
+
+  flutua(velocidade) {
+
+    if (this.atingiuMinimo) {
+      this.sobe(this.velocidadeFlutua);
+    }
+
+    if (this.atingiuMaximo) {
+      this.desce(this.velocidadeFlutua);
+    }
+
+  }
+
+
+   sobe(velocidade) {
+    if (this.variacao < this.hMax) {
+      this.variacao += velocidade;
+    } else {
+      this.atingiuMaximo = true
+      this.atingiuMinimo = false;
+    }
+  } 
+
+
+    desce(velocidade) {
+    if (this.variacao >  0) {
+      this.variacao -= velocidade;
+    } else {
+      this.atingiuMinimo = true;
+      this.atingiuMaximo = false;
+    }
+    }
+  
+  
+}</script>
+    <script>class Personagem extends animacao {
+
+  constructor(imagem, velocidade, x, y, proporcao, variacao) {
+    super(imagem, velocidade, x, y, proporcao, variacao);
+    this.h1 = super.h1;
+    this.h = this.h1;
+  
+    
+    this.invencivel= false;
+
+
+    this.velocidadeMovimento = 30;
+
+  }
+
+  cima() {
+    if (this.y - this.velocidadeMovimento > 0){
+    this.y = this.y - this.velocidadeMovimento;}
+    // som de travado/erro
+
+    
+  }
+
+  baixo() {
+    if (this.y + this.velocidadeMovimento < height - this.hPersonagem){
+    this.y = this.y + this.velocidadeMovimento;}
+    
+  }
+
+  
+   tornarInvencivel(){
+     this.invencivel = true
+     setTimeout(() => {this.invencivel = false}, 2000)
+     //piscar personagem
+     //this.Pisca()
+  }
+  
+  
+
+  estaColidindo(inimigo) {
+      if(this.invencivel) {
+       return false
+    }
+    
+    var tripoly = [];
+    var tripoly_points = [];
+
+    tripoly[0] = createVector(this.wPersonagem / 2, this.y - this.variacao);
+    tripoly[1] = createVector(0, this.y + 47 - this.variacao);
+    tripoly[2] = createVector(this.wPersonagem, this.y + 58 - this.variacao);
+    tripoly[3] = createVector(this.wPersonagem / 2, this.y + 75 - this.variacao);
+
+    tripoly_points = [tripoly[0].x, tripoly[0].y,
+      tripoly[1].x, tripoly[1].y,
+      tripoly[2].x, tripoly[2].y,
+      tripoly[3].x, tripoly[3].y
+    ]
+
+
+    var intersected = Intersects.polygonEllipse(
+      tripoly_points,
+      inimigo.x + inimigo.wPersonagem / 2,
+      inimigo.y - inimigo.variacao + inimigo.hPersonagem / 2,                 inimigo.wPersonagem / 2,
+      inimigo.hPersonagem / 2);
+
+
+
+
+    return intersected;
+  }
+
+
+
+}</script>
+  
+
+<canvas id="defaultCanvas0" class="p5Canvas" style="width: 800px; height: 262px;" width="662" height="262"></canvas></body></html>
